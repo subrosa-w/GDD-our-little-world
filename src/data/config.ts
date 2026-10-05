@@ -22,8 +22,8 @@ export const PATHS = {
   /** Versiones mayores (pendientes). Si no existen, se usan las jóvenes. */
   benjaMayor: '/assets/sprites/benja_mayor_spritesheet.png',
   belenMayor: '/assets/sprites/belen_mayor_spritesheet.png',
-  retratoBenja: '/assets/sprites/retrato_benja.png',
-  retratoBelen: '/assets/sprites/retrato_belen.png',
+  retratoBenja: '/assets/sprites/retrato_benja_busto.png',
+  retratoBelen: '/assets/sprites/retrato_belen_busto.png',
   bubu: '/assets/bubu-dudu/bubu.png',
   dudu: '/assets/bubu-dudu/dudu.png',
 } as const;

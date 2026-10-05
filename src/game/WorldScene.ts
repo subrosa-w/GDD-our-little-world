@@ -162,10 +162,15 @@ export class WorldScene extends Phaser.Scene {
         const tex = this.textures.createCanvas(capaKey, r.w, r.h)!;
         const c = tex.getContext();
         c.imageSmoothingEnabled = false;
+        if (r.forma === 'elipse') {
+          c.beginPath();
+          c.ellipse(r.w / 2, r.h / 2, r.w / 2, r.h / 2, 0, 0, Math.PI * 2);
+          c.clip();
+        }
         c.drawImage(src, r.x * sx, r.y * sy, r.w * sx, r.h * sy, 0, 0, r.w, r.h);
         tex.refresh();
       }
-      const img = this.add.image(r.x, r.y, capaKey).setOrigin(0, 0).setDepth(r.y + r.h);
+      const img = this.add.image(r.x, r.y, capaKey).setOrigin(0, 0).setDepth(r.profundidad ?? r.y + r.h);
       this.layers.push(img);
     });
 

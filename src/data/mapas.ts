@@ -15,6 +15,14 @@ export interface Rect {
   h: number;
 }
 
+/** Recorte de la imagen que se dibuja por encima del jugador. */
+export interface Capa extends Rect {
+  /** 'elipse' recorta una elipse inscrita en el rectángulo (copas de árboles). */
+  forma?: 'rect' | 'elipse';
+  /** Profundidad para el orden de dibujo; por defecto y + h. Para una copa, usar la base del tronco. */
+  profundidad?: number;
+}
+
 export interface MapaImagen {
   tipo: 'imagen';
   id: MapId;
@@ -24,8 +32,8 @@ export interface MapaImagen {
   alto: number;
   /** Rectángulos que bloquean el paso. */
   solidos: Rect[];
-  /** Recortes de la imagen que se dibujan por encima del jugador (depth = y + h). */
-  capas: Rect[];
+  /** Recortes de la imagen que se dibujan por encima del jugador. */
+  capas: Capa[];
   /** Objetos interactivos: id de data/objetos.ts, centro y radio de alcance. */
   puntos: Array<{ objeto: string; x: number; y: number; radio?: number }>;
   /** Zonas que cambian de mapa. `entrada` es la clave en `entradas` del destino. */
@@ -116,8 +124,8 @@ export const MAPAS: Record<MapId, MapaDef> = {
       { x: 870, y: 0, w: 442, h: 70 },
       { x: 0, y: 700, w: 1312, h: 116 },
       // casa (la puerta queda libre: ver portales)
-      { x: 440, y: 0, w: 190, h: 350 },
-      { x: 690, y: 0, w: 180, h: 350 },
+      { x: 440, y: 0, w: 190, h: 362 },
+      { x: 690, y: 0, w: 180, h: 362 },
       { x: 630, y: 0, w: 60, h: 305 },
       // jardinera, maceteros, banca
       { x: 440, y: 360, w: 145, h: 85 },
@@ -132,21 +140,34 @@ export const MAPAS: Record<MapId, MapaDef> = {
       { x: 708, y: 480, w: 24, h: 30 },
       { x: 578, y: 600, w: 24, h: 30 },
       { x: 728, y: 630, w: 24, h: 25 },
-      // troncos de los árboles interiores
-      { x: 300, y: 245, w: 30, h: 30 },
-      { x: 995, y: 185, w: 30, h: 30 },
-      { x: 180, y: 640, w: 30, h: 30 },
-      { x: 1095, y: 635, w: 30, h: 30 },
+      // troncos de los árboles interiores (solo la base)
+      { x: 303, y: 238, w: 26, h: 22 },
+      { x: 983, y: 202, w: 26, h: 22 },
+      { x: 180, y: 672, w: 26, h: 20 },
+      { x: 1104, y: 638, w: 16, h: 20 },
     ],
     capas: [
-      { x: 730, y: 354, w: 105, h: 34 }, // frente del asiento de la banca (tapa las piernas)
-      { x: 700, y: 440, w: 40, h: 70 }, // farol 1
-      { x: 570, y: 560, w: 40, h: 70 }, // farol 2
-      { x: 710, y: 590, w: 60, h: 65 }, // cartel
-      { x: 255, y: 110, w: 125, h: 170 }, // árbol izquierda arriba
-      { x: 935, y: 55, w: 160, h: 175 }, // árbol derecha arriba
-      { x: 135, y: 535, w: 125, h: 145 }, // árbol izquierda abajo
-      { x: 1058, y: 540, w: 100, h: 130 }, // árbol derecha abajo
+      // banca: borde del asiento y patas (tapa las piernas de los que se sientan)
+      { x: 733, y: 360, w: 100, h: 12, profundidad: 388 },
+      { x: 738, y: 372, w: 12, h: 14, profundidad: 388 },
+      { x: 818, y: 372, w: 12, h: 14, profundidad: 388 },
+      // faroles: cabeza y poste
+      { x: 706, y: 440, w: 24, h: 36, profundidad: 518 },
+      { x: 714, y: 474, w: 10, h: 44, profundidad: 518 },
+      { x: 576, y: 560, w: 24, h: 36, profundidad: 638 },
+      { x: 584, y: 594, w: 10, h: 44, profundidad: 638 },
+      // cartel: tabla y poste
+      { x: 711, y: 597, w: 54, h: 38, profundidad: 650 },
+      { x: 734, y: 633, w: 12, h: 17, profundidad: 650 },
+      // árboles: copa (elipse) y tronco, ordenados por la base del tronco
+      { x: 250, y: 102, w: 132, h: 116, forma: 'elipse', profundidad: 260 },
+      { x: 303, y: 212, w: 26, h: 48, profundidad: 260 },
+      { x: 930, y: 42, w: 130, h: 132, forma: 'elipse', profundidad: 224 },
+      { x: 983, y: 168, w: 26, h: 56, profundidad: 224 },
+      { x: 132, y: 523, w: 120, h: 124, forma: 'elipse', profundidad: 692 },
+      { x: 180, y: 640, w: 26, h: 52, profundidad: 692 },
+      { x: 1075, y: 540, w: 72, h: 80, forma: 'elipse', profundidad: 658 },
+      { x: 1104, y: 614, w: 16, h: 44, profundidad: 658 },
     ],
     puntos: [
       { objeto: 'banca', x: 782, y: 372, radio: 95 },
@@ -177,7 +198,9 @@ export const MAPAS: Record<MapId, MapaDef> = {
       { x: 75, y: 65, w: 480, h: 285 }, // pared cocina + mesón
       { x: 75, y: 350, w: 70, h: 540 }, // plantas columna izquierda
       { x: 75, y: 790, w: 140, h: 95 }, // maceteros abajo izquierda
-      { x: 555, y: 65, w: 340, h: 215 }, // pared living
+      { x: 555, y: 65, w: 340, h: 225 }, // pared living
+      { x: 555, y: 280, w: 55, h: 100 }, // planta izquierda del sofá
+      { x: 825, y: 250, w: 70, h: 130 }, // planta derecha del sofá
       { x: 605, y: 280, w: 220, h: 125 }, // sofá
       { x: 895, y: 65, w: 140, h: 340 }, // escalera
       { x: 150, y: 495, w: 260, h: 120 }, // mesa y sillas
@@ -186,10 +209,7 @@ export const MAPAS: Record<MapId, MapaDef> = {
       { x: 445, y: 735, w: 60, h: 150 }, // marco de la puerta
       { x: 605, y: 735, w: 40, h: 150 },
     ],
-    capas: [
-      { x: 150, y: 490, w: 260, h: 130 }, // mesa
-      { x: 965, y: 440, w: 70, h: 265 }, // repisa
-    ],
+    capas: [],
     puntos: [
       { objeto: 'cocina', x: 310, y: 335, radio: 95 },
       { objeto: 'mesa', x: 280, y: 560, radio: 125 },
@@ -231,10 +251,7 @@ export const MAPAS: Record<MapId, MapaDef> = {
       { x: 568, y: 45, w: 500, h: 195 }, // pared habitación vacía
       { x: 935, y: 555, w: 135, h: 280 }, // escalera
     ],
-    capas: [
-      { x: 445, y: 275, w: 100, h: 210 }, // escritorio de diseño
-      { x: 540, y: 560, w: 28, h: 50 }, // remate del muro interior
-    ],
+    capas: [],
     puntos: [
       { objeto: 'dormitorio', x: 135, y: 455, radio: 110 },
       { objeto: 'fotos-dormitorio', x: 300, y: 300, radio: 100 },

@@ -111,7 +111,7 @@ export const OBJETOS: Record<string, Objeto> = {
   'fotos-dormitorio': {
     id: 'fotos-dormitorio',
     accion: 'Mirar',
-    foto: '/assets/fotos/primera_cita.webp',
+    foto: '/assets/fotos/primer_beso.webp',
     lineas: [{ who: 'narrador', text: 'Una foto de los dos, de las primeras.' }],
   },
   oficina: {

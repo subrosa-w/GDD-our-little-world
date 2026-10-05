@@ -128,7 +128,7 @@ h2.pixel { font-size: clamp(11px, 3.2vw, 15px); margin: 0 0 10px; color: var(--w
 /* ---------- Diálogo RPG ---------- */
 .dialog {
   display: grid;
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: 84px 1fr;
   gap: 14px;
   align-items: end;
   width: 100%;
@@ -143,11 +143,14 @@ h2.pixel { font-size: clamp(11px, 3.2vw, 15px); margin: 0 0 10px; color: var(--w
 }
 .dialog.no-portrait { grid-template-columns: 1fr; }
 .dialog .portrait {
-  width: 72px;
+  width: 84px;
   height: 96px;
   object-fit: contain;
-  object-position: bottom;
-  align-self: end;
+  object-position: top;
+  align-self: start;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--bg-2);
 }
 .dialog .who {
   font-family: var(--font-pixel);
