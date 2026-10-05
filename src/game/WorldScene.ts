@@ -50,6 +50,7 @@ export class WorldScene extends Phaser.Scene {
   private portalArmed = true;
   private pendingSpawn: string | null = null;
   private layers: Phaser.GameObjects.GameObject[] = [];
+  private solids?: Phaser.Physics.Arcade.StaticGroup;
 
   constructor(opts: WorldOptions) {
     super('world');
@@ -86,6 +87,10 @@ export class WorldScene extends Phaser.Scene {
   private clearMap() {
     for (const g of this.layers) g.destroy();
     this.layers = [];
+    // El grupo estático hay que destruirlo con sus hijos (árboles, casa, autos, zonas).
+    this.solids?.clear(true, true);
+    this.solids?.destroy(true);
+    this.solids = undefined;
     this.interactables = [];
     this.portals = [];
     this.near = null;
@@ -124,7 +129,7 @@ export class WorldScene extends Phaser.Scene {
     this.layers.push(layer);
 
     const solids = this.physics.add.staticGroup();
-    this.layers.push(solids as unknown as Phaser.GameObjects.GameObject);
+    this.solids = solids;
     let startX = worldW / 2;
     let startY = worldH / 2;
     let spawnFound = false;
