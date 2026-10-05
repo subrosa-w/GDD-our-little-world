@@ -628,6 +628,8 @@ h2.pixel { font-size: clamp(10px, 3vw, 14px); margin: 0 0 10px; color: var(--ros
 .cancion h2.pixel { color: var(--gold); }
 .cancion .nota { font-size: 1.05rem; max-width: 34ch; color: var(--text); }
 .cancion audio { width: 100%; max-width: 360px; margin-top: 8px; }
+.cancion .spotify { width: 100%; max-width: 420px; margin-top: 10px; border-radius: 12px; border: 3px solid var(--wood-dark); box-shadow: 0 0 0 2px var(--tan); background: #121212; }
+.cancion a.btn { display: flex; align-items: center; justify-content: center; text-decoration: none; max-width: 420px; margin-top: 10px; }
 
 /* ---------- Nivel 2: trivia ---------- */
 .trivia-progress { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }

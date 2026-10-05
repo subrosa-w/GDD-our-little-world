@@ -110,11 +110,31 @@ const nivel1: Scene = ({ root, go }) => {
         });
       case 'cancion':
         return new Promise((resolve) => {
-          const audio = h('audio', { controls: true, preload: 'none', src: paso.src }) as HTMLAudioElement;
-          const nota = h('p', { class: 'small muted center' }, 'Versión 8-bit. La original la conoces de memoria.');
-          audio.addEventListener('error', () => {
-            audio.replaceWith(h('p', { class: 'small muted center pixel', style: 'font-size:8px' }, 'TODO_MUSICA_8BIT: versión chiptune pendiente'));
-          });
+          const reproductor: Node[] = [];
+          if (paso.spotify) {
+            // Reproductor embebido de Spotify: sin API ni llaves. Suena un adelanto sin sesión y completa si está logueada.
+            reproductor.push(
+              h('iframe', {
+                class: 'spotify',
+                src: `https://open.spotify.com/embed/track/${paso.spotify}?utm_source=generator&theme=0`,
+                width: '100%',
+                height: '152',
+                frameborder: '0',
+                allow: 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture',
+                loading: 'lazy',
+                title: paso.titulo,
+              }),
+              h(
+                'a',
+                { class: 'btn ghost block', href: `https://open.spotify.com/track/${paso.spotify}`, target: '_blank', rel: 'noopener' },
+                'ABRIR EN SPOTIFY',
+              ),
+            );
+          } else if (paso.src) {
+            const audio = h('audio', { controls: true, preload: 'none', src: paso.src }) as HTMLAudioElement;
+            audio.addEventListener('error', () => audio.remove());
+            reproductor.push(audio);
+          }
           stage.append(
             h(
               'div',
@@ -123,8 +143,7 @@ const nivel1: Scene = ({ root, go }) => {
               h('h2', { class: 'pixel' }, paso.titulo),
               h('p', { class: 'muted', style: 'margin:0 0 14px' }, paso.artista),
               h('p', { class: 'nota' }, paso.nota),
-              audio,
-              nota,
+              ...reproductor,
             ),
             h('button', { class: 'btn block', onClick: () => resolve() }, 'SEGUIR'),
           );

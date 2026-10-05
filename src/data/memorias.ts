@@ -10,7 +10,7 @@ export type Paso =
   | { tipo: 'fecha'; fecha: string; sub: string }
   | { tipo: 'lineas'; lineas: Line[] }
   | { tipo: 'foto'; src: string; pie: string }
-  | { tipo: 'cancion'; titulo: string; artista: string; src: string; nota: string };
+  | { tipo: 'cancion'; titulo: string; artista: string; nota: string; /** id de pista de Spotify (open.spotify.com/track/ID) */ spotify?: string; /** mp3 local opcional (versión 8-bit) */ src?: string };
 
 export interface Memoria {
   id: string;
@@ -140,22 +140,6 @@ export const MEMORIAS: Memoria[] = [
     ],
   },
   {
-    id: 'c01',
-    numero: 'CANCIÓN',
-    titulo: 'Una canción que me recuerda a ti',
-    fecha: '2! 3!',
-    lugar: 'BTS',
-    pasos: [
-      {
-        tipo: 'cancion',
-        titulo: '2! 3!',
-        artista: 'BTS',
-        src: '/assets/musica/2-3.mp3',
-        nota: 'Te la dediqué. Para mí representa muy bien lo que somos.',
-      },
-    ],
-  },
-  {
     id: 'c02',
     numero: 'CANCIÓN',
     titulo: 'Una canción que siempre quisiste que te dedicaran',
@@ -166,7 +150,7 @@ export const MEMORIAS: Memoria[] = [
         tipo: 'cancion',
         titulo: 'One Less Lonely Girl',
         artista: 'Justin Bieber',
-        src: '/assets/musica/one-less-lonely-girl.mp3',
+        spotify: '1PQtQQ0Gm4HyqvB3JSVMon',
         nota: 'Siempre quisiste que te la dedicaran. Y es la canción de ese 5 de octubre.',
       },
     ],
