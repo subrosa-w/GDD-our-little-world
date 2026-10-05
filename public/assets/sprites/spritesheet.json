@@ -1,0 +1,23 @@
+{
+  "frameWidth": 104,
+  "frameHeight": 192,
+  "rows": {
+    "down": 0,
+    "left": 1,
+    "right": 2,
+    "up": 3
+  },
+  "cols": {
+    "idle": 0,
+    "stepA": 1,
+    "stepB": 2
+  },
+  "walkCycle": [
+    "idle",
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "frameMs": 180,
+  "note": "Pies alineados a 4px del borde inferior de cada celda."
+}

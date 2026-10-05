@@ -1,0 +1,358 @@
+:root {
+  --bg: #120f1a;
+  --bg-2: #1b1526;
+  --surface: #241c31;
+  --surface-2: #2e2440;
+  --line: #3d3150;
+  --text: #f3ecf5;
+  --muted: #a99bb5;
+  --warm: #f2b35c;
+  --warm-2: #ffd27a;
+  --rose: #e98fa4;
+  --leaf: #7dbb6a;
+  --danger: #e07a7a;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-text: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+body { overflow-x: hidden; }
+
+img, canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+#app {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+#fade {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.42s ease;
+  z-index: 50;
+}
+#fade.on { opacity: 1; pointer-events: all; }
+
+/* ---------- Tipografía ---------- */
+.pixel { font-family: var(--font-pixel); line-height: 1.7; letter-spacing: 0.02em; }
+h1.pixel { font-size: clamp(14px, 4.2vw, 22px); margin: 0 0 12px; }
+h2.pixel { font-size: clamp(11px, 3.2vw, 15px); margin: 0 0 10px; color: var(--warm); }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+.small { font-size: 0.9rem; }
+
+/* ---------- Layout ---------- */
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(24px + var(--safe-top)) 20px calc(32px + var(--safe-bottom));
+  gap: 18px;
+  max-width: 560px;
+  width: 100%;
+  margin: 0 auto;
+}
+.screen.top { justify-content: flex-start; }
+
+.card {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--line);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 14px 18px;
+  color: #1a1322;
+  background: var(--warm);
+  border-radius: 3px;
+  box-shadow: 0 4px 0 #a8742e;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+  min-height: 48px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #a8742e; }
+.btn:disabled { filter: grayscale(1) brightness(0.6); cursor: not-allowed; }
+.btn.ghost { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 2px var(--line); }
+.btn.ghost:active { box-shadow: inset 0 0 0 2px var(--line); }
+.btn.rose { background: var(--rose); box-shadow: 0 4px 0 #a2566a; }
+.btn.rose:active { box-shadow: 0 1px 0 #a2566a; }
+.btn.block { width: 100%; }
+
+/* ---------- Inputs ---------- */
+.input {
+  width: 100%;
+  font-family: var(--font-text);
+  font-size: 18px;
+  padding: 12px 14px;
+  background: var(--bg-2);
+  color: var(--text);
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  outline: none;
+}
+.input:focus { border-color: var(--warm); }
+
+/* ---------- Diálogo RPG ---------- */
+.dialog {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 14px;
+  align-items: end;
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 4px;
+  padding: 14px;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--line);
+  min-height: 112px;
+  cursor: pointer;
+  user-select: none;
+}
+.dialog.no-portrait { grid-template-columns: 1fr; }
+.dialog .portrait {
+  width: 72px;
+  height: 96px;
+  object-fit: contain;
+  object-position: bottom;
+  align-self: end;
+}
+.dialog .who {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  color: var(--warm);
+  margin-bottom: 8px;
+}
+.dialog .who.future { color: var(--rose); }
+.dialog .text { font-size: 18px; min-height: 2.6em; }
+.dialog .hint {
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: var(--muted);
+  text-align: right;
+  margin-top: 8px;
+  animation: blink 1.2s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0.2; } }
+
+/* ---------- Pantalla de fecha (negro con texto) ---------- */
+.date-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  z-index: 40;
+  padding: 24px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.date-screen.on { opacity: 1; }
+.date-screen .date { font-family: var(--font-pixel); font-size: clamp(16px, 5vw, 26px); color: var(--warm-2); }
+.date-screen .sub { font-size: 1.05rem; color: var(--muted); max-width: 32ch; }
+
+/* ---------- Menú de niveles ---------- */
+#level-menu-btn {
+  position: fixed;
+  top: calc(10px + var(--safe-top));
+  right: 10px;
+  z-index: 45;
+  width: 44px;
+  height: 44px;
+  border-radius: 3px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#level-menu-btn.show { display: flex; }
+
+#level-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 46;
+  background: rgba(8, 6, 12, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#level-menu.open { display: flex; }
+.level-list { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 420px; }
+.level-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-text);
+  font-size: 16px;
+  width: 100%;
+}
+.level-item .n { font-family: var(--font-pixel); font-size: 10px; color: var(--warm); min-width: 64px; }
+.level-item .t { font-weight: 700; flex: 1; }
+.level-item .s { font-size: 18px; }
+.level-item.locked { opacity: 0.45; }
+.level-item.done { border-color: var(--leaf); }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(28px + var(--safe-bottom));
+  transform: translateX(-50%) translateY(10px);
+  background: var(--surface-2);
+  border: 2px solid var(--line);
+  padding: 12px 18px;
+  border-radius: 3px;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 60;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- Stickers Bubu y Dudu (placeholder hasta que lleguen las imágenes) ---------- */
+.stickers { display: flex; gap: 18px; justify-content: center; }
+.sticker {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  animation: bob 2.4s ease-in-out infinite;
+}
+.sticker:nth-child(2) { animation-delay: 1.2s; }
+.sticker.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 9px;
+  font-family: var(--font-pixel);
+}
+@keyframes bob { 50% { transform: translateY(-6px); } }
+
+/* ---------- Nivel 3: contenedor Phaser + controles táctiles ---------- */
+#app[data-scene="nivel3"], #app[data-scene="prologo"] { overflow: hidden; height: 100dvh; }
+.game-wrap { position: fixed; inset: 0; background: #000; }
+.game-wrap canvas { display: block; }
+
+.touch-pad {
+  position: fixed;
+  left: 18px;
+  bottom: calc(22px + var(--safe-bottom));
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  touch-action: none;
+  z-index: 30;
+  display: none;
+}
+.touch-pad .knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.touch-action {
+  position: fixed;
+  right: 22px;
+  bottom: calc(44px + var(--safe-bottom));
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(242, 179, 92, 0.85);
+  border: 3px solid #a8742e;
+  color: #1a1322;
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  touch-action: none;
+  z-index: 30;
+  display: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.touch-pad.show, .touch-action.show { display: block; }
+.touch-action:active { filter: brightness(0.85); }
+
+.game-hud {
+  position: fixed;
+  left: 12px;
+  top: calc(12px + var(--safe-top));
+  z-index: 30;
+  font-family: var(--font-pixel);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 10px;
+  border-radius: 3px;
+  max-width: 70vw;
+}
+
+.game-dialog {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: calc(16px + var(--safe-bottom));
+  z-index: 35;
+  display: none;
+}
+.game-dialog.show { display: block; }
+@media (pointer: coarse) {
+  .game-dialog { bottom: calc(176px + var(--safe-bottom)); }
+}
