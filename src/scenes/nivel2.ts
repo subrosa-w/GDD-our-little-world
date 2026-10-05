@@ -85,7 +85,8 @@ const nivel2: Scene = ({ root, go }) => {
     'div',
     { class: 'screen' },
     h('h2', { class: 'pixel center' }, 'NIVEL 2'),
-    h('h1', { class: 'pixel center' }, '¿Cuánto sabes de nosotros, mo?'),
+    h('h1', { class: 'pixel center', style: 'margin-bottom:0' }, '¿Cuánto sabes de nosotros, mo?'),
+    h('div', { class: 'divisor' }, '♥'),
     h('p', { class: 'muted center', style: 'margin:0' }, 'Si te equivocas no pasa nada: te doy una pista y seguimos.'),
     isCompleted('nivel2')
       ? h('button', { class: 'btn ghost block', onClick: () => go('nivel3') }, 'YA LA HICE, IR AL NIVEL 3')

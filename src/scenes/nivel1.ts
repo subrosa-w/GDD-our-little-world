@@ -23,7 +23,7 @@ const nivel1: Scene = ({ root, go }) => {
           h('span', { class: 'num pixel' }, m.numero),
           h('span', { class: 'tit' }, m.titulo),
           h('span', { class: 'meta' }, `${m.fecha} · ${m.lugar}`),
-          h('span', { class: 'mark' }, open ? '✓' : '›'),
+          h('span', { class: 'mark' }, open ? '♥' : '›'),
         ),
       );
     }
@@ -137,7 +137,8 @@ const nivel1: Scene = ({ root, go }) => {
       'div',
       { class: 'screen top' },
       h('h2', { class: 'pixel center' }, 'NIVEL 1'),
-      h('h1', { class: 'pixel center' }, 'Nuestra historia'),
+      h('h1', { class: 'pixel center', style: 'margin-bottom:0' }, 'Nuestra historia'),
+      h('div', { class: 'divisor' }, '♥'),
       h('p', { class: 'muted center', style: 'margin:0' }, 'Toca un recuerdo para abrirlo. Benja y Belen, muchos años después, los van contando.'),
       grid,
       footer,

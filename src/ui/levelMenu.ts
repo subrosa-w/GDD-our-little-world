@@ -75,7 +75,7 @@ function render() {
       },
       h('span', { class: 'n' }, TITLES[id].n),
       h('span', { class: 't' }, TITLES[id].t),
-      h('span', { class: 's' }, done ? '✓' : unlocked ? '›' : '🔒'),
+      h('span', { class: 's' }, done ? '♥' : unlocked ? '›' : '🔒'),
     );
     list.append(item);
   }

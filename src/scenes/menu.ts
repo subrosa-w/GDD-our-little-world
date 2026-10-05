@@ -22,7 +22,7 @@ const menu: Scene = ({ root, go }) => {
         },
         h('span', { class: 'n' }, n),
         h('span', { class: 't' }, t),
-        h('span', { class: 's' }, done ? '✓' : unlocked ? '›' : '🔒'),
+        h('span', { class: 's' }, done ? '♥' : unlocked ? '›' : '🔒'),
       ),
     );
   }
@@ -51,7 +51,9 @@ const menu: Scene = ({ root, go }) => {
     h(
       'div',
       { class: 'screen' },
-      h('h1', { class: 'pixel center' }, 'OUR LITTLE WORLD'),
+      h('p', { class: 'fecha-tag' }, 'DESDE EL 05 · 10 · 2024'),
+      h('h1', { class: 'pixel center', style: 'margin-bottom:0' }, 'OUR LITTLE WORLD'),
+      h('div', { class: 'divisor' }, '♥'),
       h('p', { class: 'muted center', style: 'margin:0' }, todo ? 'Nuestro pequeño mundo, abierto entero.' : 'Una historia en cinco partes.'),
       list,
       cta,

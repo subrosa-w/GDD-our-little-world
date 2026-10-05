@@ -65,10 +65,17 @@ const login: Scene = ({ root, go }) => {
     h(
       'div',
       { class: 'screen' },
-      h('div', { class: 'stickers' }, sticker(PATHS.bubu, 'bubu'), sticker(PATHS.dudu, 'dudu')),
+      h('p', { class: 'fecha-tag' }, 'OUR LITTLE WORLD'),
+      h(
+        'div',
+        { class: 'pareja' },
+        h('img', { src: PATHS.retratoBenja, alt: '' }),
+        h('span', { class: 'corazon' }, '♥'),
+        h('img', { src: PATHS.retratoBelen, alt: '' }),
+      ),
       h('h1', { class: 'pixel center' }, 'Bienvenida, mo.'),
       form,
-      h('p', { class: 'muted small center pixel', style: 'font-size:8px; margin-top:12px' }, 'OUR LITTLE WORLD'),
+      h('div', { class: 'stickers' }, sticker(PATHS.bubu, 'bubu'), sticker(PATHS.dudu, 'dudu')),
     ),
   );
   setTimeout(() => input.focus(), 500);

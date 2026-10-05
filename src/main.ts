@@ -2,6 +2,7 @@ import './styles.css';
 import { registerScene, goTo } from './router';
 import { getProgress } from './progress';
 import { mountLevelMenuButton } from './ui/levelMenu';
+import { mountSky } from './ui/sky';
 
 registerScene('login', () => import('./scenes/login').then((m) => m.default));
 registerScene('menu', () => import('./scenes/menu').then((m) => m.default));
@@ -11,6 +12,7 @@ registerScene('nivel2', () => import('./scenes/nivel2').then((m) => m.default));
 registerScene('nivel3', () => import('./scenes/nivel3').then((m) => m.default));
 registerScene('final', () => import('./scenes/final').then((m) => m.default));
 
+mountSky();
 mountLevelMenuButton();
 
 // Si ya entró antes, saltamos el login.
