@@ -91,13 +91,13 @@ export const OBJETOS: Record<string, Objeto> = {
   'fotos-living': {
     id: 'fotos-living',
     accion: 'Mirar',
-    foto: '/assets/fotos/living.webp',
+    foto: '/assets/fotos/primer_dia_de_novios.webp',
     lineas: [{ who: 'narrador', text: 'Fotos de ustedes dos. De todos los años.' }],
   },
   'foto-matrimonio': {
     id: 'foto-matrimonio',
     accion: 'Mirar',
-    foto: '/assets/fotos/matrimonio.webp',
+    foto: '/assets/fotos/matrimonio.webp', // TODO_FOTO_MATRIMONIO: no existe todavía; se oculta sola
     lineas: [
       { who: 'narrador', text: 'La foto del matrimonio. Benja y Belen. Y al lado, él.' },
       { who: 'narrador', text: 'Nuestro padrino.' },
@@ -111,7 +111,7 @@ export const OBJETOS: Record<string, Objeto> = {
   'fotos-dormitorio': {
     id: 'fotos-dormitorio',
     accion: 'Mirar',
-    foto: '/assets/fotos/dormitorio.webp',
+    foto: '/assets/fotos/primera_cita.webp',
     lineas: [{ who: 'narrador', text: 'Una foto de los dos, de las primeras.' }],
   },
   oficina: {

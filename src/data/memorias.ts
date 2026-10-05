@@ -1,6 +1,7 @@
 // NIVEL 1 — Recuerdos desbloqueables.
 // Todo lo que está aquí sale de CLAUDE.md. Nada inventado.
-// TODO_FOTO_*: Benja deja las fotos en public/assets/fotos/ con esos nombres (WebP, máx. ~1200 px de ancho).
+// Fotos en public/assets/fotos/ (WebP, máx. 1200 px de ancho). Los originales quedan en originales/fotos/.
+// TODO_FOTO_M01: falta una foto del comienzo para la Memoria 01 (hoy no muestra foto).
 // TODO_RECUERDOS_2025_2026: faltan las Memorias 05+ (Benja las entrega). Se agregan al final de MEMORIAS.
 
 import type { Line } from '../ui/dialogPlayer';
@@ -57,7 +58,6 @@ export const MEMORIAS: Memoria[] = [
           { who: 'benja-futuro', text: 'Ese fue el primer capítulo de nosotros.' },
         ],
       },
-      { tipo: 'foto', src: '/assets/fotos/m01.webp', pie: 'TODO_FOTO_M01: una foto del comienzo.' },
     ],
   },
   {
@@ -80,7 +80,7 @@ export const MEMORIAS: Memoria[] = [
         ],
       },
       { tipo: 'fecha', fecha: '29 · 08 · 2024', sub: 'La primera de muchas.' },
-      { tipo: 'foto', src: '/assets/fotos/m02.webp', pie: 'TODO_FOTO_M02: una foto de esos primeros días.' },
+      { tipo: 'foto', src: '/assets/fotos/primera_cita.webp', pie: 'Nuestra primera cita.' },
     ],
   },
   {
@@ -100,7 +100,7 @@ export const MEMORIAS: Memoria[] = [
           { who: 'belen-futuro', text: 'Siempre.' },
         ],
       },
-      { tipo: 'foto', src: '/assets/fotos/m03.webp', pie: 'TODO_FOTO_M03: una foto de la costanera o de esa época.' },
+      { tipo: 'foto', src: '/assets/fotos/primer_beso.webp', pie: 'El primer beso.' },
     ],
   },
   {
@@ -136,7 +136,7 @@ export const MEMORIAS: Memoria[] = [
           { who: 'benja-futuro', text: 'Aunque no sabía cuánto.' },
         ],
       },
-      { tipo: 'foto', src: '/assets/fotos/m04.webp', pie: 'TODO_FOTO_M04: una foto de Puerto Varas, idealmente en la escalera.' },
+      { tipo: 'foto', src: '/assets/fotos/primer_dia_de_novios.webp', pie: 'Nuestro primer día de novios.' },
     ],
   },
   {

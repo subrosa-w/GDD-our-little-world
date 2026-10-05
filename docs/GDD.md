@@ -30,16 +30,19 @@ LOGIN → PRÓLOGO (Phaser, cinemática) → NIVEL 1 (memorias) → NIVEL 2 (tri
 | Router de escenas con fundido | `src/router.ts` |
 | Caja de diálogo RPG y pantalla de fecha | `src/ui/dialogPlayer.ts` |
 
-## Mapas ASCII
+## Mapas
 
-Cada carácter es un tile de 32 px. La leyenda está en `src/data/mapas.ts` (`LEYENDA`).
-Piezas grandes: un carácter ancla en la esquina inferior izquierda y `#` en el resto de la huella.
+Los tres mapas (`terreno`, `casa1`, `casa2`) usan **fondo de imagen**: `public/assets/mapa/terreno.jpg` (1312×816), `casa1.jpg` y `casa2.jpg` (1104×960), generados con Gemini a partir de los prompts del chat. Todo lo demás se define en píxeles de esa imagen en `src/data/mapas.ts`:
 
-- `terreno`: casa `H` (9×6 tiles + techo), puerta `D`, banca `B` (ahí se sienta Benja), autos `C` (Benja) y `M` (Mini), cartel `S`, jardín `f`/`g`, huerto `h`/`v`, maceteros `p`, árboles `T`, inicio `P`.
-- `casa1`: cocina `K`, mesa `t`, sofá `L`, cuadros `F`, **foto del matrimonio con el padrino `X`**, alfombra `r`, escalera `U`, salida `d`.
-- `casa2`: cama `E`, cuadro `R`, escritorio `O`, pared interior `|` con puerta `+`, **placa de la habitación vacía `Q`**, escalera `u`.
+- `solidos`: rectángulos que bloquean (paredes, muebles, autos, troncos).
+- `capas`: recortes de la misma imagen que se dibujan por encima del jugador (banca, faroles, cartel, copas de árboles, mesa). Así el personaje pasa por detrás.
+- `puntos`: objetos interactivos con centro y radio (el radio grande sirve para muebles con colisión amplia).
+- `portales` y `entradas`: zonas que cambian de mapa y dónde aparece el jugador al llegar.
+- `banca`: donde se sienta Benja (y los dos en el prólogo). La banca va en `capas` para que les tape las piernas.
 
-Portales: `D`→`casa1`, `d`→`terreno`, `U`→`casa2`, `u`→`casa1`. `salida` en la leyenda dice dónde aparece el jugador al llegar.
+Para reemplazar una imagen: misma ruta y mismo tamaño, o ajustar `ancho`/`alto` y las coordenadas. Para ajustar una colisión basta mover el rectángulo.
+
+El modo anterior (ASCII con tiles dibujados en código, `tipo: 'tiles'` y `LEYENDA`) se mantiene como respaldo en el mismo archivo.
 
 ## Cierre del Nivel 3
 
@@ -56,8 +59,7 @@ Portales: `D`→`casa1`, `d`→`terreno`, `U`→`casa2`, `u`→`casa1`. `salida`
 ## Assets opcionales (se detectan solos, si faltan no rompe nada)
 
 - `public/assets/bubu-dudu/bubu.png`, `dudu.png` → stickers en login, trivia y carta.
-- `public/assets/fotos/m01.webp … m04.webp` → fotos de las memorias.
-- `public/assets/fotos/living.webp`, `matrimonio.webp`, `dormitorio.webp` → cuadros de la casa.
+- `public/assets/fotos/primera_cita.webp`, `primer_beso.webp`, `primer_dia_de_novios.webp` → memorias 02–04 y cuadros de la casa (originales en `originales/fotos/`). Falta `matrimonio.webp` (cuadro del padrino) y una foto para la Memoria 01.
 - `public/assets/musica/2-3.mp3`, `one-less-lonely-girl.mp3` → versiones 8-bit en las tarjetas de canción.
 
 ## Pendientes marcados en el código (buscar `TODO_`)

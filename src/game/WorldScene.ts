@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { PATHS, SPRITE } from '../data/config';
-import { LEYENDA, MAPAS, type MapId, type Pieza } from '../data/mapas';
+import { LEYENDA, MAPAS, type MapId, type MapaImagen, type MapaTiles, type Pieza } from '../data/mapas';
 import { OBJETOS, type Objeto } from '../data/objetos';
 import { pad, consumeAction } from './input';
 import { createCharAnims, createCharacter, moveCharacter, faceDir, type Character } from './player';
@@ -28,6 +28,7 @@ interface Interactable {
   objeto: Objeto;
   x: number;
   y: number;
+  radio: number;
 }
 
 interface Portal {
@@ -35,6 +36,17 @@ interface Portal {
   to: MapId;
   spawn: string;
 }
+
+interface Built {
+  worldW: number;
+  worldH: number;
+  startX: number;
+  startY: number;
+  benchPos: { x: number; y: number } | null;
+  nombre: string;
+}
+
+const RADIO_DEFAULT = 72;
 
 export class WorldScene extends Phaser.Scene {
   private opts: WorldOptions;
@@ -63,6 +75,9 @@ export class WorldScene extends Phaser.Scene {
     const m = this.opts.mayores;
     this.load.spritesheet('belen', m ? PATHS.belenMayor : PATHS.belen, frameConfig);
     this.load.spritesheet('benja', m ? PATHS.benjaMayor : PATHS.benja, frameConfig);
+    for (const def of Object.values(MAPAS)) {
+      if (def.tipo === 'imagen') this.load.image(`mapa-${def.id}`, def.imagen);
+    }
   }
 
   create() {
@@ -87,7 +102,7 @@ export class WorldScene extends Phaser.Scene {
   private clearMap() {
     for (const g of this.layers) g.destroy();
     this.layers = [];
-    // El grupo estático hay que destruirlo con sus hijos (árboles, casa, autos, zonas).
+    // El grupo estático hay que destruirlo con sus hijos (sólidos y zonas).
     this.solids?.clear(true, true);
     this.solids?.destroy(true);
     this.solids = undefined;
@@ -105,12 +120,73 @@ export class WorldScene extends Phaser.Scene {
     this.clearMap();
     this.mapId = id;
     const def = MAPAS[id];
+    const solids = this.physics.add.staticGroup();
+    this.solids = solids;
+
+    const built = def.tipo === 'imagen' ? this.buildImageMap(def, spawnChar, solids) : this.buildTileMap(def, spawnChar, solids);
+    solids.refresh();
+    this.physics.world.setBounds(0, 0, built.worldW, built.worldH);
+    this.finishMap(built, solids);
+  }
+
+  private addSolidRect(solids: Phaser.Physics.Arcade.StaticGroup, x: number, y: number, w: number, h: number) {
+    const z = this.add.zone(x, y, w, h).setOrigin(0, 0);
+    this.physics.add.existing(z, true);
+    solids.add(z);
+    this.layers.push(z);
+  }
+
+  private addPortal(x: number, y: number, w: number, h: number, to: MapId, spawn: string) {
+    const zone = this.add.zone(x, y, w, h).setOrigin(0, 0);
+    this.physics.add.existing(zone, true);
+    this.layers.push(zone);
+    this.portals.push({ zone, to, spawn });
+  }
+
+  /** Mapa con fondo de imagen: sólidos, capas, puntos y portales en píxeles. */
+  private buildImageMap(def: MapaImagen, spawnChar: string | null, solids: Phaser.Physics.Arcade.StaticGroup): Built {
+    const key = `mapa-${def.id}`;
+    const bg = this.add.image(0, 0, key).setOrigin(0, 0).setDepth(-1000);
+    bg.setDisplaySize(def.ancho, def.alto);
+    this.layers.push(bg);
+
+    for (const r of def.solidos) this.addSolidRect(solids, r.x, r.y, r.w, r.h);
+
+    // Recortes de la imagen por encima del jugador.
+    const src = this.textures.get(key).getSourceImage() as HTMLImageElement | HTMLCanvasElement;
+    const sx = src.width / def.ancho;
+    const sy = src.height / def.alto;
+    def.capas.forEach((r, i) => {
+      const capaKey = `${key}-capa-${i}`;
+      if (!this.textures.exists(capaKey)) {
+        const tex = this.textures.createCanvas(capaKey, r.w, r.h)!;
+        const c = tex.getContext();
+        c.imageSmoothingEnabled = false;
+        c.drawImage(src, r.x * sx, r.y * sy, r.w * sx, r.h * sy, 0, 0, r.w, r.h);
+        tex.refresh();
+      }
+      const img = this.add.image(r.x, r.y, capaKey).setOrigin(0, 0).setDepth(r.y + r.h);
+      this.layers.push(img);
+    });
+
+    for (const p of def.puntos) {
+      const objeto = OBJETOS[p.objeto];
+      if (objeto) this.interactables.push({ objeto, x: p.x, y: p.y, radio: p.radio ?? RADIO_DEFAULT });
+    }
+    for (const p of def.portales) this.addPortal(p.x, p.y, p.w, p.h, p.to, p.entrada);
+
+    const entrada = spawnChar ? def.entradas[spawnChar] : undefined;
+    const start = entrada ?? def.spawn;
+    return { worldW: def.ancho, worldH: def.alto, startX: start.x, startY: start.y, benchPos: def.banca ?? null, nombre: def.nombre };
+  }
+
+  /** Mapa ASCII con tiles dibujados en código (respaldo). */
+  private buildTileMap(def: MapaTiles, spawnChar: string | null, solids: Phaser.Physics.Arcade.StaticGroup): Built {
     const rows = def.tiles.length;
     const cols = def.tiles[0].length;
     const worldW = cols * TILE;
     const worldH = rows * TILE;
 
-    // Fondo
     const data: number[][] = [];
     let seed = 3;
     for (let r = 0; r < rows; r++) {
@@ -128,11 +204,8 @@ export class WorldScene extends Phaser.Scene {
     const layer = map.createLayer(0, tiles, 0, 0)!.setDepth(-1000);
     this.layers.push(layer);
 
-    const solids = this.physics.add.staticGroup();
-    this.solids = solids;
     let startX = worldW / 2;
     let startY = worldH / 2;
-    let spawnFound = false;
     let benchPos: { x: number; y: number } | null = null;
     const lamps: Array<{ x: number; y: number }> = [];
 
@@ -147,13 +220,11 @@ export class WorldScene extends Phaser.Scene {
         if (ch === 'P' && !spawnChar) {
           startX = cx;
           startY = bottom;
-          spawnFound = true;
         }
         if (spawnChar && ch === spawnChar) {
           const sal = LEYENDA[ch]?.salida ?? { dx: 0, dy: 1 };
           startX = cx + sal.dx * TILE;
           startY = bottom + sal.dy * TILE;
-          spawnFound = true;
         }
         if (!pieza) continue;
 
@@ -170,24 +241,19 @@ export class WorldScene extends Phaser.Scene {
             const body = s.body as Phaser.Physics.Arcade.StaticBody;
             const cu = pieza.cuerpo;
             if (cu) {
-              const h = s.height;
               body.setSize(cu.w, cu.h);
-              body.setOffset(cu.dx ?? 0, h - cu.h - (cu.dy ?? 0));
+              body.setOffset(cu.dx ?? 0, s.height - cu.h - (cu.dy ?? 0));
             }
             sprite = s;
           } else {
             sprite = this.add.image(left, bottom, pieza.textura).setOrigin(0, 1);
             this.layers.push(sprite);
           }
-          // Las piezas de pared se dibujan planas (sobre la pared); el resto se ordena por y.
           const plano = ['rug', 'doormat', 'flowerbed', 'plot', 'path'].includes(pieza.textura) || pieza.textura.startsWith('stairs');
           sprite.setDepth(pieza.pared ? -800 : plano ? -700 : bottom);
           if (pieza.textura === 'lamp') lamps.push({ x: left + 16, y: bottom - 50 });
         } else if (pieza.solido) {
-          const z = this.add.zone(left, bottom - TILE, TILE, TILE).setOrigin(0, 0);
-          this.physics.add.existing(z, true);
-          solids.add(z);
-          this.layers.push(z);
+          this.addSolidRect(solids, left, bottom - TILE, TILE, TILE);
         }
 
         if (pieza.objeto) {
@@ -195,7 +261,7 @@ export class WorldScene extends Phaser.Scene {
           if (objeto) {
             const dx = pieza.centro?.dx ?? TILE / 2;
             const dy = pieza.centro?.dy ?? -TILE / 2;
-            this.interactables.push({ objeto, x: left + dx, y: bottom + dy });
+            this.interactables.push({ objeto, x: left + dx, y: bottom + dy, radio: RADIO_DEFAULT });
           }
         }
         if (ch === 'B') benchPos = { x: left + 48, y: bottom };
@@ -203,21 +269,11 @@ export class WorldScene extends Phaser.Scene {
         if (pieza.portal) {
           const w = pieza.cuerpo?.w ?? TILE;
           const h = pieza.cuerpo?.h ?? TILE;
-          const zone = this.add.zone(left, bottom - h, w, h).setOrigin(0, 0);
-          this.physics.add.existing(zone, true);
-          this.layers.push(zone);
-          this.portals.push({ zone, to: pieza.portal.to, spawn: pieza.portal.spawn });
+          this.addPortal(left, bottom - h, w, h, pieza.portal.to, pieza.portal.spawn);
         }
       }
     }
-    solids.refresh();
-    if (!spawnFound && spawnChar) {
-      // Si no está el carácter de spawn, aparece en 'P' o al centro.
-      startX = worldW / 2;
-      startY = worldH / 2;
-    }
 
-    // Noche: velo oscuro + resplandor de ventanas.
     if (def.noche) {
       const veil = this.add.rectangle(0, 0, worldW, worldH, 0x0a0a1e, 0.38).setOrigin(0, 0).setDepth(5000);
       this.layers.push(veil);
@@ -238,44 +294,45 @@ export class WorldScene extends Phaser.Scene {
       }
     }
 
-    this.physics.world.setBounds(0, 0, worldW, worldH);
+    return { worldW, worldH, startX, startY, benchPos, nombre: def.nombre };
+  }
 
-    // Benja en la banca (afuera).
+  private finishMap(built: Built, solids: Phaser.Physics.Arcade.StaticGroup) {
+    const { worldW, worldH, startX, startY, benchPos } = built;
+    const cam = this.cameras.main;
+
+    // Benja en la banca (afuera). La banca se dibuja encima y le tapa las piernas: "sentado".
     if (benchPos) {
-      const bp = benchPos as { x: number; y: number };
-      this.benja = createCharacter(this, 'benja', bp.x - 24, bp.y - 2);
+      this.benja = createCharacter(this, 'benja', benchPos.x - 24, benchPos.y - 2);
       this.benja.sprite.body!.enable = false;
-      this.benja.sprite.setDepth(bp.y - 1); // la banca (depth = bp.y) le tapa las piernas: "sentado"
+      this.benja.sprite.setDepth(benchPos.y - 1);
       faceDir(this.benja, 'down');
     }
 
     if (this.opts.modo === 'prologo' && benchPos) {
-      const bp = benchPos as { x: number; y: number };
-      this.player = createCharacter(this, 'belen', bp.x + 24, bp.y - 2);
+      this.player = createCharacter(this, 'belen', benchPos.x + 24, benchPos.y - 2);
       this.player.sprite.body!.enable = false;
-      this.player.sprite.setDepth(bp.y - 1);
+      this.player.sprite.setDepth(benchPos.y - 1);
       faceDir(this.player, 'down');
-      const cam = this.cameras.main;
       cam.setBounds(0, 0, worldW, worldH);
-      cam.centerOn(bp.x, bp.y - 60);
+      cam.centerOn(benchPos.x, benchPos.y - 70);
       this.applyZoom();
       return;
     }
 
     this.player = createCharacter(this, 'belen', startX, startY);
     this.physics.add.collider(this.player.sprite, solids);
-    const cam = this.cameras.main;
     cam.setBounds(0, 0, worldW, worldH);
     cam.startFollow(this.player.sprite, true, 0.12, 0.12);
     cam.setRoundPixels(true);
     this.applyZoom();
     this.portalArmed = false; // hasta salir del portal donde aparece
-    this.opts.events.onMapChange?.(id, def.nombre);
+    this.opts.events.onMapChange?.(this.mapId, built.nombre);
   }
 
   private applyZoom() {
     const w = this.scale.width;
-    const base = w < 480 ? 1.15 : w < 900 ? 1.3 : 1.5;
+    const base = w < 480 ? 1.0 : w < 900 ? 1.2 : 1.4;
     this.cameras.main.setZoom(this.opts.modo === 'prologo' ? base * 1.15 : base);
   }
 
@@ -325,13 +382,11 @@ export class WorldScene extends Phaser.Scene {
 
     // Portales
     const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
+    const feet = new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height);
     let onPortal: Portal | null = null;
     for (const p of this.portals) {
       const zb = p.zone.body as Phaser.Physics.Arcade.StaticBody;
-      if (Phaser.Geom.Intersects.RectangleToRectangle(
-        new Phaser.Geom.Rectangle(body.x, body.y, body.width, body.height),
-        new Phaser.Geom.Rectangle(zb.x, zb.y, zb.width, zb.height),
-      )) {
+      if (Phaser.Geom.Intersects.RectangleToRectangle(feet, new Phaser.Geom.Rectangle(zb.x, zb.y, zb.width, zb.height))) {
         onPortal = p;
         break;
       }
@@ -342,15 +397,15 @@ export class WorldScene extends Phaser.Scene {
       return;
     }
 
-    // Objeto cercano
+    // Objeto cercano: el que esté proporcionalmente más cerca de su radio.
     const px = this.player.sprite.x;
     const py = this.player.sprite.y;
     let best: Interactable | null = null;
-    let bestD = 72;
+    let bestScore = 1;
     for (const it of this.interactables) {
-      const d = Math.hypot(it.x - px, it.y - py);
-      if (d < bestD) {
-        bestD = d;
+      const score = Math.hypot(it.x - px, it.y - py) / it.radio;
+      if (score < bestScore) {
+        bestScore = score;
         best = it;
       }
     }
