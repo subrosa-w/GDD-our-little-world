@@ -326,6 +326,27 @@ function stairs(scene: Phaser.Scene, key: string, up: boolean) {
   });
 }
 
+/** Camino de tierra. */
+function path(scene: Phaser.Scene) {
+  canvas(scene, 'path', TILE, TILE, (c) => {
+    rect(c, 0, 0, TILE, TILE, '#4a3a2c');
+    for (let i = 0; i < 18; i++) rect(c, Math.floor(rnd() * TILE), Math.floor(rnd() * TILE), 2, 2, rnd() > 0.5 ? '#3f3024' : '#5a4836');
+    rect(c, 0, 0, 2, TILE, '#3b4a33');
+    rect(c, TILE - 2, 0, 2, TILE, '#3b4a33');
+  });
+}
+
+/** Farol de jardín 32×64. */
+function lamp(scene: Phaser.Scene) {
+  canvas(scene, 'lamp', 32, 64, (c) => {
+    rect(c, 10, 56, 12, 8, '#2a2a2a');
+    rect(c, 14, 20, 4, 38, '#3a3a3a');
+    rect(c, 8, 8, 16, 14, '#2a2a2a');
+    rect(c, 10, 10, 12, 10, '#ffd27a');
+    rect(c, 12, 4, 8, 4, '#2a2a2a');
+  });
+}
+
 /** Resplandor suave para ventanas de noche. */
 function glow(scene: Phaser.Scene) {
   canvas(scene, 'glow', 128, 128, (c) => {
@@ -362,5 +383,7 @@ export function ensureTextures(scene: Phaser.Scene) {
   desk(scene);
   stairs(scene, 'stairs-up', true);
   stairs(scene, 'stairs-down', false);
+  path(scene);
+  lamp(scene);
   glow(scene);
 }

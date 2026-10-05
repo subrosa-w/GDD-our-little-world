@@ -5,8 +5,9 @@ import type { Line } from '../ui/dialogPlayer';
 
 export const PROLOGO: Line[] = [
   { who: 'belen-futuro', text: 'Mo...' },
-  { who: 'benja-futuro', text: '¿Qué?' },
+  { who: 'benja-futuro', text: 'Dime miamo' },
   { who: 'belen-futuro', text: '¿Te acuerdas de cómo nos conocimos?' },
+  { who: 'benja-futuro', text: 'Como si fuera ayer..' },
 ];
 
 /** Variante sutil cuando ya se completó todo y vuelve a entrar. */
@@ -50,7 +51,7 @@ export const FINAL_INTRO_CARTA = 'Si llegaste hasta aquí, mo...';
 
 /** TODO_CARTA: Benja escribe la carta aquí. Cada string es un párrafo. */
 export const CARTA: string[] = [
-  'TODO_CARTA',
+  'Feliz aniversario mi bubusita. Esta carta esta hecha por mi; te gusto el juego que te hice? jeje, espero que realmente te haya gustado, lo hice con musho amo. Quiero que sepas que eres alguien enormemente importante para mi, y que espero que si podamos llegar hasta viejitos juntos, hice unos pequeños cambios en esta realidad como viste jeje, pero me gusta asi. Bueno, no te molesto ma, sigue jugando. Te amo.',
 ];
 
 export const CARTA_CIERRE = 'Feliz aniversario, mo. ❤️';

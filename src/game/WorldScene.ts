@@ -134,6 +134,7 @@ export class WorldScene extends Phaser.Scene {
     let startY = worldH / 2;
     let spawnFound = false;
     let benchPos: { x: number; y: number } | null = null;
+    const lamps: Array<{ x: number; y: number }> = [];
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -179,7 +180,9 @@ export class WorldScene extends Phaser.Scene {
             this.layers.push(sprite);
           }
           // Las piezas de pared se dibujan planas (sobre la pared); el resto se ordena por y.
-          sprite.setDepth(pieza.pared ? -800 : pieza.textura.startsWith('stairs') || pieza.textura === 'rug' || pieza.textura === 'doormat' || pieza.textura === 'flowerbed' || pieza.textura === 'plot' ? -700 : bottom);
+          const plano = ['rug', 'doormat', 'flowerbed', 'plot', 'path'].includes(pieza.textura) || pieza.textura.startsWith('stairs');
+          sprite.setDepth(pieza.pared ? -800 : plano ? -700 : bottom);
+          if (pieza.textura === 'lamp') lamps.push({ x: left + 16, y: bottom - 50 });
         } else if (pieza.solido) {
           const z = this.add.zone(left, bottom - TILE, TILE, TILE).setOrigin(0, 0);
           this.physics.add.existing(z, true);
@@ -228,6 +231,10 @@ export class WorldScene extends Phaser.Scene {
             this.layers.push(g);
           }
         }
+      }
+      for (const l of lamps) {
+        const g = this.add.image(l.x, l.y, 'glow').setBlendMode(Phaser.BlendModes.ADD).setDepth(5001).setAlpha(0.8).setScale(1.3);
+        this.layers.push(g);
       }
     }
 
@@ -293,8 +300,18 @@ export class WorldScene extends Phaser.Scene {
     });
   }
 
+  private drainInputs() {
+    if (this.wasd) Phaser.Input.Keyboard.JustDown(this.wasd.E);
+    if (this.cursors) Phaser.Input.Keyboard.JustDown(this.cursors.space);
+    consumeAction();
+  }
+
   update() {
-    if (this.paused || !this.player || this.opts.modo !== 'juego') return;
+    if (this.opts.modo !== 'juego' || !this.player) return;
+    if (this.paused) {
+      this.drainInputs();
+      return;
+    }
 
     let vx = pad.x;
     let vy = pad.y;

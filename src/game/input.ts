@@ -3,6 +3,9 @@
 
 import { h, isTouch } from '../ui/dom';
 
+/** Evento que dispara el botón táctil de acción; los diálogos lo escuchan para avanzar. */
+export const ACTION_EVENT = 'olw-action';
+
 export const pad = {
   x: 0,
   y: 0,
@@ -72,6 +75,8 @@ export function mountTouchControls(parent: HTMLElement, actionLabel = 'E'): () =
   const onAction = (e: Event) => {
     e.preventDefault();
     pad.actionQueued = true;
+    // Si hay un diálogo abierto, el mismo botón lo avanza.
+    window.dispatchEvent(new Event(ACTION_EVENT));
   };
   action.addEventListener('pointerdown', onAction);
 

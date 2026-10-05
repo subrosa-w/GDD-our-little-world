@@ -493,8 +493,8 @@ h2.pixel { font-size: clamp(11px, 3.2vw, 15px); margin: 0 0 10px; color: var(--w
 .prologo-title.hide { opacity: 0; }
 .game-place {
   position: fixed;
-  right: 62px;
-  top: calc(20px + var(--safe-top));
+  left: 12px;
+  top: calc(52px + var(--safe-top));
   z-index: 30;
   font-size: 8px;
   color: rgba(255,255,255,.6);

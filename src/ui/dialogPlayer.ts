@@ -1,7 +1,8 @@
 import { h } from './dom';
 import { PATHS } from '../data/config';
+import { ACTION_EVENT } from '../game/input';
 
-export type Speaker = 'benja' | 'belen' | 'amigo' | 'narrador' | 'benja-futuro' | 'belen-futuro';
+export type Speaker = 'benja' | 'belen' | 'nico' | 'narrador' | 'benja-futuro' | 'belen-futuro';
 
 export interface Line {
   who: Speaker;
@@ -11,7 +12,7 @@ export interface Line {
 const NAMES: Record<Speaker, string> = {
   benja: 'Benja',
   belen: 'Belen',
-  amigo: 'Amigo',
+  nico: 'Nico',
   narrador: '',
   'benja-futuro': 'Benja, muchos años después',
   'belen-futuro': 'Belen, muchos años después',
@@ -101,9 +102,11 @@ export function playDialog(container: HTMLElement, lines: Line[], opts: { charMs
   function onKey(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ' || e.key.toLowerCase() === 'e') {
       e.preventDefault();
+      if (e.repeat) return; // tecla mantenida: no pasar líneas de corrido
       advance();
     }
   }
+  const onAction = () => advance();
 
   function finish() {
     if (cancelled) return;
@@ -111,11 +114,13 @@ export function playDialog(container: HTMLElement, lines: Line[], opts: { charMs
     window.clearInterval(typing);
     box.removeEventListener('click', advance);
     window.removeEventListener('keydown', onKey);
+    window.removeEventListener(ACTION_EVENT, onAction);
     resolveDone();
   }
 
   box.addEventListener('click', advance);
   window.addEventListener('keydown', onKey);
+  window.addEventListener(ACTION_EVENT, onAction);
   showLine();
 
   return { done, cancel: finish };
