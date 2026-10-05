@@ -1,7 +1,7 @@
 // Ajustes que Benja define. TODO_ marca lo que falta.
 
 /** Clave de entrada. Belen la escribe en el login. Se compara sin mayúsculas ni espacios extra. */
-export const CLAVE = 'TODO_CLAVE';
+export const CLAVE = '05102024';
 
 /** Nombre del amigo (Benja decide si aparece). Se usa solo si no está vacío. */
 export const NOMBRE_AMIGO = '';
