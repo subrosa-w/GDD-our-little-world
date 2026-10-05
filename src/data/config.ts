@@ -19,6 +19,9 @@ export const SPRITE = {
 export const PATHS = {
   benja: '/assets/sprites/benja_spritesheet.png',
   belen: '/assets/sprites/belen_spritesheet.png',
+  /** Versiones mayores (pendientes). Si no existen, se usan las jóvenes. */
+  benjaMayor: '/assets/sprites/benja_mayor_spritesheet.png',
+  belenMayor: '/assets/sprites/belen_mayor_spritesheet.png',
   retratoBenja: '/assets/sprites/retrato_benja.png',
   retratoBelen: '/assets/sprites/retrato_belen.png',
   bubu: '/assets/bubu-dudu/bubu.png',

@@ -355,4 +355,158 @@ h2.pixel { font-size: clamp(11px, 3.2vw, 15px); margin: 0 0 10px; color: var(--w
 .game-dialog.show { display: block; }
 @media (pointer: coarse) {
   .game-dialog { bottom: calc(176px + var(--safe-bottom)); }
+  .game-dialog.low { bottom: calc(16px + var(--safe-bottom)); }
+}
+
+/* ---------- Nivel 1: memorias ---------- */
+.memorias { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.memoria-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: 'num mark' 'tit mark' 'meta mark';
+  gap: 2px 12px;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: var(--font-text);
+}
+.memoria-card.open { border-color: var(--leaf); }
+.memoria-card .num { grid-area: num; font-size: 9px; color: var(--warm); }
+.memoria-card .tit { grid-area: tit; font-weight: 700; font-size: 17px; }
+.memoria-card .meta { grid-area: meta; color: var(--muted); font-size: 14px; }
+.memoria-card .mark { grid-area: mark; font-size: 20px; color: var(--muted); }
+.memoria-card.open .mark { color: var(--leaf); }
+.nivel-footer { width: 100%; }
+
+.memoria-view {
+  position: fixed;
+  inset: 0;
+  z-index: 38;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+  gap: 14px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  overflow-y: auto;
+}
+.memoria-view.on { opacity: 1; }
+.memoria-head { display: flex; flex-direction: column; gap: 4px; padding-right: 56px; }
+.memoria-head .num { font-size: 9px; color: var(--warm); }
+.memoria-head .tit { font-weight: 700; font-size: 18px; }
+.memoria-stage { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 16px; max-width: 560px; width: 100%; margin: 0 auto; }
+.memoria-dialog { width: 100%; }
+.memoria-actions { display: flex; justify-content: center; }
+
+.foto-frame { margin: 0; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.foto {
+  width: 100%;
+  max-height: 55vh;
+  object-fit: contain;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--bg-2);
+  image-rendering: auto;
+}
+.foto.placeholder {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 9px;
+  border-style: dashed;
+}
+.foto-frame figcaption { color: var(--muted); font-size: 14px; text-align: center; }
+
+.cancion { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cancion .disco {
+  width: 84px; height: 84px; border-radius: 50%;
+  background: radial-gradient(circle, var(--warm) 0 14%, #1a1322 15% 20%, #2a2236 21% 100%);
+  display: flex; align-items: center; justify-content: center; color: var(--warm-2); font-size: 20px;
+  animation: spin 6s linear infinite; margin-bottom: 10px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.cancion .nota { font-size: 1.05rem; max-width: 34ch; }
+.cancion audio { width: 100%; max-width: 360px; margin-top: 8px; }
+
+/* ---------- Nivel 2: trivia ---------- */
+.trivia-progress { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.trivia-progress .dot { width: 10px; height: 10px; background: var(--line); border-radius: 1px; }
+.trivia-progress .dot.done { background: var(--leaf); }
+.trivia-progress .dot.now { background: var(--warm); }
+.trivia .num { font-size: 9px; color: var(--warm); margin: 0 0 8px; }
+.trivia .pregunta { font-size: 19px; font-weight: 700; margin: 0 0 16px; }
+.opciones { display: flex; flex-direction: column; gap: 8px; }
+.opcion {
+  text-align: left; padding: 12px 14px; background: var(--bg-2); color: var(--text);
+  border: 2px solid var(--line); border-radius: 3px; cursor: pointer; font-family: var(--font-text); font-size: 16px;
+  min-height: 48px;
+}
+.opcion:disabled { cursor: default; }
+.opcion.ok { border-color: var(--leaf); background: rgba(125, 187, 106, 0.15); }
+.opcion.bad { border-color: var(--danger); opacity: 0.55; }
+.trivia .pista { margin: 14px 0 0; color: var(--rose); font-size: 15px; min-height: 1.5em; }
+.trivia .pista.ok { color: var(--leaf); }
+.stickers.celebra .sticker { animation: celebrate 0.9s ease-in-out infinite; }
+.stickers.celebra .sticker:nth-child(2) { animation-delay: 0.45s; }
+@keyframes celebrate { 50% { transform: translateY(-12px) rotate(6deg); } }
+
+/* ---------- Final / carta ---------- */
+.final-stage { width: 100%; display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.final-text { font-size: 1.2rem; text-align: center; max-width: 30ch; margin: 0; opacity: 0; transform: translateY(6px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.final-text.on { opacity: 1; transform: none; }
+.carta {
+  width: 100%;
+  background: #f6efe4;
+  color: #2b2230;
+  padding: 24px 22px;
+  border-radius: 3px;
+  font-size: 17.5px;
+  line-height: 1.7;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--line);
+}
+.carta p { margin: 0 0 1em; }
+.carta .cierre { font-size: 12px; margin-top: 1.6em; color: #8a2f4a; }
+.carta .firma { text-align: right; font-style: italic; color: #6b5a74; margin: 0; }
+
+/* ---------- Prólogo / HUD extra ---------- */
+.prologo-title {
+  position: fixed;
+  left: 0; right: 0;
+  top: calc(18vh + var(--safe-top));
+  text-align: center;
+  font-size: clamp(11px, 3.4vw, 16px);
+  color: var(--warm-2);
+  text-shadow: 0 2px 0 #000, 0 0 12px rgba(0,0,0,.8);
+  z-index: 32;
+  transition: opacity 0.9s ease;
+  padding: 0 20px;
+}
+.prologo-title.hide { opacity: 0; }
+.game-place {
+  position: fixed;
+  right: 62px;
+  top: calc(20px + var(--safe-top));
+  z-index: 30;
+  font-size: 8px;
+  color: rgba(255,255,255,.6);
+}
+.game-foto {
+  display: block;
+  width: 100%;
+  max-height: 38vh;
+  object-fit: contain;
+  margin: 0 auto 10px;
+  border: 2px solid var(--line);
+  border-radius: 3px;
+  background: var(--bg-2);
+  image-rendering: auto;
 }
